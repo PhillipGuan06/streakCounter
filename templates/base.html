@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streak Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        .container {
+            max-width: 400px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .streak {
+            font-size: 24px;
+            margin: 20px 0;
+        }
+        .check-in-btn {
+            padding: 10px 20px;
+            font-size: 18px;
+            color: #fff;
+            background-color: #28a745;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .check-in-btn:hover {
+            background-color: #218838;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>{% block title%}{%endblock%}</h1>
+        <p>{%block content%}{%endblock%}</p>
+        <!-- <p class="streak">Current Streak: <strong>{{ streak }}</strong> days</p>
+        {%if current_date == last_date_checked_in%}
+        <p>You already checked in</p>
+        {%else%}
+        <a href="/check-in">
+            <button class="check-in-btn">Check In</button>
+        </a>
+        {%endif%} -->
+    </div>
+</body>
+</html>
