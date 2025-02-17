@@ -37,6 +37,7 @@ def login():
         session.permanent = True
         name = request.form["fname"]
         session["user"] = name
+        ##flash("Login Successful")
         return redirect(url_for('index'))
     if request.method == "GET":
         return render_template('login.html')
