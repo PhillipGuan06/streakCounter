@@ -25,20 +25,27 @@
             font-size: 24px;
             margin: 20px 0;
         }
+        .button-container {
+            display: flex;
+            flex-direction: column;  /* Stack buttons vertically */
+            align-items: center;  /* Center buttons */
+            gap: 20px;  /* Adds spacing between buttons */
+            margin-top: 15px;  /* Optional: Adds some space above */
+        }
         .check-in-btn {
             padding: 10px 20px;
             font-size: 18px;
             color: #fff;
             background-color: #28a745;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
         }
         .check-in-btn:hover {
             background-color: #218838;
         }
         .logout-btn:hover {
-            background-color: #218838;
+            background-color: #404541;
         }
     </style>
 </head>
@@ -49,12 +56,15 @@
         {%if current_date == last_date_checked_in%}
         <p>You already checked in</p>
         {%else%}
-        <a href="/check-in">
-            <button class="check-in-btn">Check In</button>
-        </a>
+            <div class="button-container">
+                <a href="/check-in">
+                    <button class="check-in-btn">Check In</button>
+                </a>
+            </div>
         {%endif%}
         <a href="/logout">
             <button class="logout-btn"> Logout </button>
+        </a>
     </div>
 </body>
 </html>
