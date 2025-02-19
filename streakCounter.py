@@ -26,12 +26,16 @@ class Streak(db.Model):
 
 
 def get_streak():
-    streak = Streak.query.first()
+    if "user" not in session:
+        return None
+    return Streak.query.filter_by(name=session["user"]).first()
+
+    '''streak = Streak.query.first()
     if not streak:
         streak = Streak(streak_count=0)
         db.session.add(streak)
         db.session.commit()
-    return streak
+    return streak'''
 
 @app.route('/')
 def index():
