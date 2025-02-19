@@ -4,15 +4,26 @@ from datetime import date, timedelta
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///streak.db'
-db = SQLAlchemy(app)
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.secret_key = "hello"
 app.permanent_session_lifetime = timedelta(minutes=60)
 
+db = SQLAlchemy(app)
+
+
 class Streak(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
     last_check_in = db.Column(db.Date, nullable=False, default=date.today() - timedelta(days=1))
     streak_count = db.Column(db.Integer, nullable=False, default=0)
-    
+    email = db.Column(db.String(100))
+
+    def __init__(self, name, last_check_in, streak_count, email):
+        self.name = name
+        self.last_check_in = last_check_in
+        self.streak_count = streak_count
+        self.email = email
+
 
 def get_streak():
     streak = Streak.query.first()
@@ -35,9 +46,18 @@ def index():
 def login():
     if request.method == "POST":
         session.permanent = True
-        name = request.form["fname"]
-        session["user"] = name
-        ##flash("Login Successful")
+        user = request.form["fname"]
+        session["user"] = user
+        
+        found_user = Streak.query.filter_by(name = user).first()
+        ##if found_user:
+            ##session["email"] = found_user.email
+        if not found_user:
+            usr = Streak(name=user, last_check_in=date.today()-timedelta(days=1), streak_count=0, email=request.form["email"])
+            db.session.add(usr)
+            db.session.commit()
+
+
         return redirect(url_for('index'))
     if request.method == "GET":
         return render_template('login.html')
