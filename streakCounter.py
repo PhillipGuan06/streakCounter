@@ -28,31 +28,11 @@ class Streak(db.Model):
         self.streak_count = streak_count
         self.email = email
 
-'''class Milestone(db.Model):
+class Milestone(db.Model):
     id = db.Column(db.Integer,primary_key=True)
     name = db.Column(db.String(100))
     threshold = db.Column(db.Integer, nullable=False)
-
-def calculate_progress(streak_count):
-    # Get all milestone thresholds sorted in ascending order
-    milestones = [m.threshold for m in Milestone.query.order_by(Milestone.threshold).all()]
     
-    # Determine the next milestone
-    for milestone in milestones:
-        if streak_count < milestone:
-            return {
-                "current": streak_count,
-                "next": milestone,
-                "progress_percent": int((streak_count / milestone) * 100)
-            }
-    
-    # If all milestones are passed
-    return {
-        "current": streak_count,
-        "next": None,
-        "progress_percent": 100
-    }
-'''
 
 def get_streak():
     if "user" not in session:
@@ -71,10 +51,27 @@ def index():
     if "user" in session:  
         user = session["user"]
         streak = get_streak()
-        return render_template('index.html', user = user, streak=streak.streak_count, current_date = date.today(), last_date_checked_in=streak.last_check_in)
+        streak_count = streak.streak_count
+        current_date = date.today()
+        last_date_checked_in = streak.last_check_in
+
+        # Calculate the next milestone (e.g., 5, 10, 15, etc.)
+        next_milestone = ((streak_count // 5) + 1) * 5
+        
+        # Calculate progress as a percentage (how far the user is to the next milestone)
+        progress = ((streak_count % 5) / 5) * 100  # % progress within the current milestone range
+        
+        return render_template('index.html', 
+                               user=user, 
+                               streak=streak_count, 
+                               current_date=current_date,
+                               last_date_checked_in=last_date_checked_in,
+                               next_milestone=next_milestone, 
+                               progress=progress)
     else:
         return redirect(url_for('login'))
 
+    
 @app.route("/login", methods=["POST", "GET"])
 def login():
     if request.method == "POST":

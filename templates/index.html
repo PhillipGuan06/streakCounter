@@ -6,7 +6,7 @@
     <title>Streak Tracker</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif, sans-serif;
             text-align: center;
             margin: 50px;
         }
@@ -25,45 +25,80 @@
             font-size: 24px;
             margin: 20px 0;
         }
-        .button-container {
-            display: flex;
-            flex-direction: column;  /* Stack buttons vertically */
-            align-items: center;  /* Center buttons */
-            gap: 20px;  /* Adds spacing between buttons */
-            margin-top: 15px;  /* Optional: Adds some space above */
-        }
-        .check-in-btn {
+        .check-in-btn, .logout-btn {
             padding: 10px 20px;
             font-size: 18px;
             color: #fff;
-            background-color: #28a745;
             border: none;
-            border-radius: 10px;
+            border-radius: 5px;
             cursor: pointer;
+            margin: 10px;
+        }
+        .check-in-btn {
+            background-color: #28a745;
+        }
+        .logout-btn {
+            background-color: #404541;
         }
         .check-in-btn:hover {
             background-color: #218838;
         }
         .logout-btn:hover {
-            background-color: #404541;
+            background-color: #303633;
+        }
+
+        .progress-bar {
+            width: 100%;
+            background-color: #f3f3f3;
+            border-radius: 10px;
+            margin: 20px 0;
+            height: 25px;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .progress {
+            height: 100%;
+            background-color: #28a745;
+            border-radius: 10px;
+            transition: width 0.5s;
+        }
+
+        .milestone-label {
+            position: absolute;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .milestone-label-next {
+            bottom: -20px;  /* Bottom right label for next milestone */
+            right: 0;
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>Streak Tracker</h1>
-        <p class="streak">{{user}}'s current streak: <strong>{{ streak }}</strong> days</p>
-        {%if current_date == last_date_checked_in%}
-        <p>You already checked in</p>
-        {%else%}
-            <div class="button-container">
-                <a href="/check-in">
-                    <button class="check-in-btn">Check In</button>
-                </a>
-            </div>
-        {%endif%}
+        <p class="streak">{{ user }}'s current streak: <strong>{{ streak }}</strong> days</p>
+        
+        <!-- Milestone Progress Bar with Labels -->
+        <div class="progress-bar">
+            <div class="progress" style="width: {{ progress }}%"></div>
+            <!-- Display the next milestone on the bottom right of the progress bar -->
+            <span class="milestone-label milestone-label-next">{{ next_milestone }} Days</span>
+        </div>
+        
+        {% if current_date == last_date_checked_in %}
+            <p>You already checked in today!</p>
+        {% else %}
+            <a href="/check-in">
+                <button class="check-in-btn">Check In</button>
+            </a>
+        {% endif %}
+
         <a href="/logout">
-            <button class="logout-btn"> Logout </button>
+            <button class="logout-btn">Logout</button>
         </a>
     </div>
 </body>
