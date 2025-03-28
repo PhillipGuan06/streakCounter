@@ -1,6 +1,6 @@
 from flask import Flask, render_template, redirect, url_for, request, session, flash
 from flask_sqlalchemy import SQLAlchemy
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///streak.db'
@@ -54,6 +54,34 @@ def index():
         streak_count = streak.streak_count
         current_date = date.today()
         last_date_checked_in = streak.last_check_in
+        # Get top 5 users for the leaderboard
+        top_users = Streak.query.order_by(Streak.streak_count.desc()).limit(5).all()
+
+        # Calculate the next milestone (e.g., 5, 10, 15, etc.)
+        next_milestone = ((streak_count // 5) + 1) * 5
+        
+        # Calculate progress as a percentage
+        progress = ((streak_count % 5) / 5) * 100  
+
+        return render_template('index.html', 
+                               user=user, 
+                               streak=streak_count, 
+                               current_date=current_date,
+                               last_date_checked_in=last_date_checked_in,
+                               next_milestone=next_milestone,
+                               progress=progress,
+                               top_users=top_users)
+    else:
+        return redirect(url_for('login'))
+
+'''@app.route('/')
+def index():
+    if "user" in session:  
+        user = session["user"]
+        streak = get_streak()
+        streak_count = streak.streak_count
+        current_date = date.today()
+        last_date_checked_in = streak.last_check_in
 
         # Calculate the next milestone (e.g., 5, 10, 15, etc.)
         next_milestone = ((streak_count // 5) + 1) * 5
@@ -69,7 +97,7 @@ def index():
                                next_milestone=next_milestone, 
                                progress=progress)
     else:
-        return redirect(url_for('login'))
+        return redirect(url_for('login'))'''
 
     
 @app.route("/login", methods=["POST", "GET"])
@@ -100,27 +128,51 @@ def logout():
     session.pop("user", None)
     return redirect(url_for("login"))
 
-
 @app.route('/check-in')
 def check_in():
     streak = get_streak()
+    if not streak:
+        flash("No streak found for the current user.", "error")
+        return redirect(url_for('index'))
+
     today = date.today()
+    
+    # Check if the user already checked in today
+    if streak.last_check_in == today:
+        flash("You have already checked in today!", "info")
+        return redirect(url_for('index'))
+
+    # If the last check-in was yesterday, increase streak
+    elif streak.last_check_in == today - timedelta(days=1):  # Corrected line
+        streak.streak_count += 1  # Increase streak by 1
+        streak.last_check_in = today
+    else:
+        # If the check-in was missed for more than one day, reset streak
+        streak.streak_count = 1  # Reset streak to 1
+        streak.last_check_in = today
+
+    # Commit changes to the database
+    db.session.commit()
+    
+    flash("Checked in successfully!", "success")
+    return redirect(url_for('index'))
+
+'''@app.route('/check-in')
+def check_in():
+    streak = get_streak()
+    today = date.today()
+    now = datetime.now()
     if streak.last_check_in == today:
         pass  # Already checked in today
     elif streak.last_check_in == today - timedelta(days=1):
         streak.streak_count += 1  # Continue streak
     else:
-        ##flash message here to tell the user that they 
-        ##missed the last login, needs further testing, make sure that it doesn't
-        ##pop up messages from the login screen "Logged out successfully" or make sure 
-        ##it doesn't always just flash the message everytime. 
-        ###flash("Logged out successfully")
         streak.streak_count = 1  # Reset streak
     
     streak.last_check_in = today
     ###streak.streak_count += 1
     db.session.commit()
-    return redirect(url_for('index'))
+    return redirect(url_for('index'))'''
 
 if __name__ == '__main__':
     with app.app_context():

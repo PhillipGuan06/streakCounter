@@ -5,6 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Streak Tracker</title>
     <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #28a745;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #ddd;
+        }
+
         body {
             font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif, sans-serif;
             text-align: center;
@@ -82,13 +107,11 @@
         <h1>Streak Tracker</h1>
         <p class="streak">{{ user }}'s current streak: <strong>{{ streak }}</strong> days</p>
         
-        <!-- Milestone Progress Bar with Labels -->
         <div class="progress-bar">
             <div class="progress" style="width: {{ progress }}%"></div>
-            <!-- Display the next milestone on the bottom right of the progress bar -->
             <span class="milestone-label milestone-label-next">{{ next_milestone }} Days</span>
         </div>
-        
+    
         {% if current_date == last_date_checked_in %}
             <p>You already checked in today!</p>
         {% else %}
@@ -96,10 +119,30 @@
                 <button class="check-in-btn">Check In</button>
             </a>
         {% endif %}
-
+    
         <a href="/logout">
             <button class="logout-btn">Logout</button>
         </a>
+    
+        <br><br>
+    
+        <!-- Leaderboard Section -->
+        <h2>Leaderboard</h2>
+        <table border="1">
+            <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Streak</th>
+            </tr>
+            {% for user in top_users %}
+            <tr {% if user.name == session['user'] %} style="background-color: lightgreen;" {% endif %}>
+                <td>{{ loop.index }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.streak_count }}</td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
+
 </body>
 </html>
