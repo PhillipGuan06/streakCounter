@@ -5,6 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Streak Tracker</title>
     <style>
+        .badges-container {
+            position: fixed;
+            top: 50px;
+            left: 10px; /* Change position to the left side */
+            display: flex;
+            flex-direction: column;
+            align-items: center;    
+        }
+
+        .badge-icon {
+            width: 50px; /* Much smaller badge size */
+            height: 50px;
+            margin: 5px 0;
+        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -103,10 +117,20 @@
 </head>
 
 <body>
+    <!-- Badges Section (Placed Outside Container, Left Side) -->
+    <div class="badges-container">
+        {% if badge_count > 0 %}
+            {% for i in range(badge_count) %}
+                <img src="{{ url_for('static', filename='badge.png') }}" alt="Badge" class="badge-icon">
+            {% endfor %}
+        {% endif %}
+    </div>
+
     <div class="container">
         <h1>Streak Tracker</h1>
         <p class="streak">{{ user }}'s current streak: <strong>{{ streak }}</strong> days</p>
-        
+
+        <!-- Progress Bar -->
         <div class="progress-bar">
             <div class="progress" style="width: {{ progress }}%"></div>
             <span class="milestone-label milestone-label-next">{{ next_milestone }} Days</span>
@@ -140,9 +164,9 @@
                 <td>{{ user.name }}</td>
                 <td>{{ user.streak_count }}</td>
             </tr>
-            {% endfor %}
+            {% endfor %}    
         </table>
     </div>
-
 </body>
+
 </html>
